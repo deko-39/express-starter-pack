@@ -1,0 +1,31 @@
+{
+  "name": "express-starter",
+  "version": "1.0.0",
+  "description": "expressjs starter pack",
+  "main": "main.js",
+  "scripts": {
+    "prebuild": "rm -rf ./dist",
+    "build": "tsc && tsc-alias",
+    "start": "npm run build && nodemon ./dist/src/main.js"
+  },
+  "author": "Deko",
+  "license": "ISC",
+  "dependencies": {
+    "cli-color": "^2.0.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.22",
+    "tsc": "^2.0.4",
+    "typescript": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/cli-color": "^2.0.2",
+    "@types/express": "^4.17.17",
+    "@types/morgan": "^1.9.4",
+    "eslint": "^8.43.0",
+    "prettier": "^2.8.8",
+    "tsc-alias": "^1.8.6",
+    "tslib": "^2.6.0"
+  }
+}

@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
+const dotenv_1 = tslib_1.__importDefault(require("dotenv"));
+const express_1 = tslib_1.__importDefault(require("express"));
+const morgan_1 = tslib_1.__importDefault(require("morgan"));
+const routes_1 = tslib_1.__importDefault(require("./routes"));
+const utils_1 = require("./utils");
+dotenv_1.default.config();
+const app = (0, express_1.default)();
+const PORT = process.env.PORT;
+app.use((0, morgan_1.default)('combined'));
+app.use(routes_1.default);
+process.on('uncaughtException', (error) => {
+    utils_1.logger.error('Uncaught Exception!');
+    utils_1.logger.error('App crashed!');
+    utils_1.logger.error(error);
+});
+app.listen(PORT);
+utils_1.logger.log(`App is running on ${PORT} 🚀`);
