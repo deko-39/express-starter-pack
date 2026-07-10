@@ -1,31 +1,55 @@
 {
   "name": "express-starter",
   "version": "1.0.0",
-  "description": "expressjs starter pack",
-  "main": "main.js",
+  "description": "production-ready Express.js starter pack",
+  "type": "module",
+  "main": "dist/main.js",
   "scripts": {
     "prebuild": "rm -rf ./dist",
     "build": "tsc && tsc-alias",
-    "start": "npm run build && nodemon ./dist/src/main.js"
+    "changeset": "changeset",
+    "dev": "tsx watch src/main.ts",
+    "format": "prettier --write .",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "prepare": "husky install",
+    "release": "changeset publish",
+    "start": "node ./dist/main.js",
+    "start:prod": "npm run build && npm run start",
+    "typecheck": "tsc --noEmit",
+    "version-packages": "changeset version"
+  },
+  "lint-staged": {
+    "*.{json,md,yml,yaml}": "prettier --write",
+    "src/**/*.ts": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   },
   "author": "Deko",
   "license": "ISC",
   "dependencies": {
-    "cli-color": "^2.0.3",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "morgan": "^1.10.0",
-    "nodemon": "^2.0.22",
-    "tsc": "^2.0.4",
-    "typescript": "^5.1.6"
+    "axios": "^1.18.1",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "helmet": "^8.2.0",
+    "typescript": "^5.9.3",
+    "valibot": "^1.4.2",
+    "winston": "^3.18.3"
   },
   "devDependencies": {
-    "@types/cli-color": "^2.0.2",
-    "@types/express": "^4.17.17",
-    "@types/morgan": "^1.9.4",
-    "eslint": "^8.43.0",
+    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "@typescript-eslint/parser": "^8.37.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.25",
+    "eslint": "^8.57.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
     "prettier": "^2.8.8",
-    "tsc-alias": "^1.8.6",
-    "tslib": "^2.6.0"
+    "@changesets/cli": "^2.29.5",
+    "tsc-alias": "^1.9.0",
+    "tslib": "^2.8.1",
+    "tsx": "^4.23.0"
   }
 }

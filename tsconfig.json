@@ -1,13 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "commonjs",
-    "rootDir": "./",
-    "moduleResolution": "node",
-    "baseUrl": "./",
-    "paths": {
-      "~/*": ["src/*"]
-    },
+    "target": "ES2022",
+    "module": "NodeNext",
+    "rootDir": "./src",
+    "moduleResolution": "NodeNext",
     "outDir": "./dist",
     "importHelpers": true,
     "esModuleInterop": true,

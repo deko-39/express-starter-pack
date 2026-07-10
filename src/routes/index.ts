@@ -1,8 +1,16 @@
-import express from 'express'
-import userRouter from './user'
+import { HttpStatusCode } from 'axios';
+import express from 'express';
+import userRouter from './user/index.js';
 
-const router = express.Router()
+const router = express.Router();
 
-router.use('/users', userRouter)
+router.get('/health', (_, res) => {
+  res.status(HttpStatusCode.Ok).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+  });
+});
 
-export default router
+router.use('/users', userRouter);
+
+export default router;

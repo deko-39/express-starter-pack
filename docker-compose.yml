@@ -1,0 +1,16 @@
+services:
+  api:
+    build:
+      context: .
+      target: production
+    image: express-starter:local
+    init: true
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:3000}
+    ports:
+      - '${PORT:-3000}:3000'

@@ -1,23 +1,37 @@
-import dotenv from 'dotenv'
-import express from 'express'
-import morgan from 'morgan'
-import router from './routes'
-import { logger } from './utils'
+import { createServer } from 'node:http';
+import { app } from './app.js';
+import { env } from './config/env.js';
+import { logger } from './utils/index.js';
 
-dotenv.config()
+const server = createServer(app);
 
-const app = express()
-const PORT = process.env.PORT
+const shutdown = (signal: NodeJS.Signals) => {
+  logger.warn({ signal }, 'Shutdown signal received. Closing server.');
 
-app.use(morgan('combined'))
+  server.close((error) => {
+    if (error) {
+      logger.error({ err: error }, 'Failed to close server gracefully.');
+      process.exit(1);
+    }
 
-app.use(router)
+    logger.info('Server closed gracefully.');
+    process.exit(0);
+  });
+};
 
-process.on('uncaughtException', (error: Record<string, unknown>) => {
-  logger.error('Uncaught Exception!')
-  logger.error('App crashed!')
-  logger.error(error)
-})
+process.on('uncaughtException', (error: unknown) => {
+  logger.fatal({ err: error }, 'Uncaught exception detected.');
+  process.exit(1);
+});
 
-app.listen(PORT)
-logger.log(`App is running on ${PORT} 🚀`)
+process.on('unhandledRejection', (reason: unknown) => {
+  logger.fatal({ err: reason }, 'Unhandled promise rejection detected.');
+  process.exit(1);
+});
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+
+server.listen(env.PORT, () => {
+  logger.info({ port: env.PORT }, 'API server is listening.');
+});

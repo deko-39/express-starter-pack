@@ -1,13 +1,11 @@
-import { NextFunction, Request, Response } from 'express'
-import { logger } from './logger'
+import type { NextFunction, Request, Response } from 'express';
 
 export const errorWrapper =
-  (fn: Awaited<Function>) =>
+  (fn: (req: Request, res: Response, next: NextFunction) => unknown | Promise<unknown>) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await fn(req, res, next)
+      await fn(req, res, next);
     } catch (error: unknown) {
-      logger.error('Handling request error!')
-      logger.error(error)
+      next(error);
     }
-  }
+  };
