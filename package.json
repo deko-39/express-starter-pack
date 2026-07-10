@@ -1,7 +1,8 @@
 {
   "name": "express-starter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "production-ready Express.js starter pack",
+  "private": true,
   "type": "module",
   "main": "dist/main.js",
   "scripts": {
@@ -13,7 +14,6 @@
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "prepare": "husky install",
-    "release": "changeset publish",
     "start": "node ./dist/main.js",
     "start:prod": "npm run build && npm run start",
     "typecheck": "tsc --noEmit",

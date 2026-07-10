@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+### Patch Changes
+
+- restructure project
+
 All notable changes to this project should be documented in this file.
 
 The recommended release flow uses Changesets to update `package.json` and regenerate this changelog from committed changeset files.
