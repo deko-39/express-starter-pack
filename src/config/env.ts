@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { Service } from 'typedi';
 import {
   InferOutput,
   check,
@@ -13,7 +14,8 @@ import {
 
 dotenv.config();
 
-class ConfigService {
+@Service()
+export class ConfigService {
   public static readonly envSchema = object({
     NODE_ENV: optional(picklist(['development', 'test', 'production']), 'development'),
     PORT: pipe(
@@ -76,7 +78,3 @@ class ConfigService {
 }
 
 type EnvValues = InferOutput<typeof ConfigService.envSchema>;
-
-const env = new ConfigService();
-
-export { ConfigService, env };

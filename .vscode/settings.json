@@ -1,10 +1,10 @@
 {
   "files.exclude": {
-    "**/.git": true,
-    "**/dist": true
+    "**/.git": true
   },
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "js/ts.tsdk.path": "node_modules/typescript/lib"
 }

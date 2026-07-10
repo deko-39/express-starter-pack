@@ -1,4 +1,4 @@
-# Users Route
+# Users Controller
 
 ## Base Path
 
@@ -63,4 +63,4 @@ Returns `204 No Content`.
 
 ## Source
 
-- `src/routes/user/index.ts`
+- `src/features/user/user.controller.ts`

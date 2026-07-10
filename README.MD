@@ -1,50 +1,105 @@
 # Express Starter Pack
 
-Opinionated TypeScript starter for Express APIs with a clean bootstrap flow, request middleware, centralized error handling, and a structure that scales from a demo route to a larger service.
+Express starter built with TypeScript, TypeDI, Valibot, and Winston. The project is structured for API services with a small bootstrap surface, feature-based folders, central error handling, request logging, and a compiled `dist` runtime for production-style execution.
 
-## Included
+## What Is Included
 
-- TypeScript build with path aliases
-- Environment loading and validation
-- Express app/server separation
-- Request logging with Winston
-- Security and transport middleware with Helmet and CORS
-- JSON and URL-encoded body parsing
-- Health check route
-- 404 and centralized error handling
-- Graceful shutdown for SIGINT and SIGTERM
-- Husky and lint-staged for pre-commit automation
-- Versioned releases with changelog generation
+- Express app bootstrap split between `src/app.ts` and `src/main.ts`
+- Dependency injection with `typedi` and `reflect-metadata`
+- Environment loading and validation with `dotenv` and `valibot`
+- Winston logger with colorized development logs and JSON production logs
+- Helmet, CORS, JSON body parsing, and URL-encoded body parsing
+- Request logging middleware with request ids and latency tracking
+- `404` handling and centralized error handling
+- Graceful shutdown for `SIGINT` and `SIGTERM`
+- TypeScript path alias support with `@src/*`
+- ESLint, Prettier, Husky, and lint-staged
+- Changesets-based versioning workflow
+
+## Requirements
+
+- Node.js 20+
+- npm 10+
+
+## Install
+
+```bash
+npm install
+```
+
+## Run
+
+```bash
+npm run dev
+```
+
+This starts the app from `src/main.ts` in watch mode with `tsx`.
+
+For compiled output:
+
+```bash
+npm run build
+npm start
+```
+
+`npm start` runs `dist/main.js` with `NODE_ENV=development`, so it expects `dist/` to already exist.
+
+For a production-style local run:
+
+```bash
+npm run start:prod
+```
+
+That command builds the project and starts the compiled server with `NODE_ENV=production`.
 
 ## Scripts
 
-- `npm run dev`: start the API in watch mode with `tsx`
-- `npm run build`: compile TypeScript into `dist`
-- `npm run start`: run the compiled server
-- `npm run start:prod`: build and then run the compiled server
-- `npm run typecheck`: run TypeScript checks without emitting files
-- `npm run changeset`: create a changeset entry for a user-facing change
-- `npm run format`: format the project with Prettier
-- `npm run lint`: lint the TypeScript source tree
-- `npm run lint:fix`: auto-fix lint issues in the TypeScript source tree
-- `npm run version-packages`: apply pending changesets to the package version and changelog
-- `npm run release`: publish with Changesets
-
-## Docker
-
-- `docker build -t express-starter .`: build the production image
-- `docker compose up --build`: build and run the API with Docker Compose
-
-The Docker image uses a multi-stage build, installs dependencies with `npm ci`, compiles the app before runtime, drops to the non-root `node` user, and exposes the API on port `3000`.
+- `npm run dev`: run the source app in watch mode with `tsx`
+- `npm run build`: compile TypeScript to `dist` and rewrite aliases with `tsc-alias`
+- `npm start`: run the compiled app from `dist` with `NODE_ENV=development`
+- `npm run start:prod`: build and run the compiled app with `NODE_ENV=production`
+- `npm run typecheck`: run TypeScript without emitting files
+- `npm run lint`: lint TypeScript files under `src/`
+- `npm run lint:fix`: lint and auto-fix TypeScript files under `src/`
+- `npm run format`: format the repository with Prettier
+- `npm run changeset`: create a changeset entry
+- `npm run version-packages`: apply pending changesets to package versions
 
 ## Environment
 
-Create a `.env` file:
+Create a `.env` file in the project root.
 
 ```env
+NODE_ENV=development
 PORT=3000
-CLIENT_ORIGIN=http://localhost:3000
+CLIENT_ORIGIN=true
 ```
+
+Supported values:
+
+- `NODE_ENV`: `development`, `test`, or `production`
+- `PORT`: positive integer, defaults to `3000`
+- `CLIENT_ORIGIN`: `true`, `false`, or a non-empty origin string
+
+## Logging
+
+- Development logs are colorized for readability
+- Production logs are JSON to stdout
+- Request logs include request id, latency, method, URL, IP, user agent, and status code
+
+## API Surface
+
+Base path: `/api/v1`
+
+- `GET /health`
+- `GET /users`
+- `GET /users/:id`
+- `GET /users/:id/profile`
+- `POST /users`
+- `PATCH /users/:id`
+- `DELETE /users/:id`
+
+These user endpoints currently return starter responses and are intended as the first feature slice to extend.
 
 ## Project Structure
 
@@ -52,56 +107,62 @@ CLIENT_ORIGIN=http://localhost:3000
 src/
     app.ts
     main.ts
+    preload.ts
     config/
         env.ts
-    middleware/
-        error-handler.ts
-        not-found.ts
-    routes/
+        index.ts
+    features/
         index.ts
         user/
             index.ts
+            user.controller.ts
+            user.service.ts
+    middleware/
+        error-handler.ts
+        index.ts
+        not-found.ts
+    routes/
+        index.ts
     utils/
         app-error.ts
         error-wrapper.ts
         index.ts
         logger.ts
 docs/
-    routes/
+    README.md
+    controllers/
         health/
             README.md
         users/
             README.md
-CHANGELOG.md
 ```
 
-## Starter Conventions
+## Architecture Notes
 
-- Register global middleware in `src/app.ts`
-- Keep `src/main.ts` focused on server lifecycle only
-- Wrap async route handlers with `errorWrapper`
-- Throw `AppError` for expected client and domain errors
-- Mount new domain routers under `/api/v1`
+- `src/preload.ts` must load first so decorator metadata is available before DI resolution
+- `src/app.ts` wires middleware and mounts the route tree
+- `src/main.ts` owns the HTTP server lifecycle and shutdown signals
+- `src/routes/index.ts` is the root API router/controller
+- Feature code lives together under `src/features/<feature-name>/`
+- Use `AppError` for expected client-facing errors
+- Use `errorWrapper` for async handlers that should forward failures to the global error middleware
 
-## Example Endpoints
+## Tooling Notes
 
-- `GET /api/v1/health`
-- `GET /api/v1/users`
-- `GET /api/v1/users/:id`
-- `GET /api/v1/users/:id/profile`
+- `dist/` is generated only after `npm run build`
+- `.vscode/settings.json` currently hides `dist/` in the Explorer
+- staged TypeScript files are auto-fixed through `lint-staged`
+- path aliases are compiled and then rewritten by `tsc-alias`
 
-## Docs And Releases
+## Documentation
 
-- Route documentation lives under `docs/`
-- Release notes live in `CHANGELOG.md`
-- Changeset files live under `.changeset/`
-- Husky installs a `pre-commit` hook that runs `lint-staged`
+- Project docs index: `docs/README.md`
+- Health route docs: `docs/controllers/health/README.md`
+- Users route docs: `docs/controllers/users/README.md`
 
-Use `npm install` after pulling these changes so Husky can install hooks from the `prepare` script.
+## Suggested Next Steps
 
-## Next Extensions
-
-- Add request validation with Zod or Joi
-- Add database and service layers
-- Add tests with Vitest or Jest and Supertest
-- Add OpenAPI documentation
+- Add request payload validation for feature endpoints
+- Add a persistence layer and repositories
+- Add API tests with Supertest
+- Add OpenAPI generation

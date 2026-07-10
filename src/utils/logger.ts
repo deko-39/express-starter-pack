@@ -1,12 +1,20 @@
+import { ConfigService } from '@src/config';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { randomUUID } from 'node:crypto';
+import { Service } from 'typedi';
 import winston from 'winston';
-import { env } from '../config/env.js';
 
 type LogMeta = Record<string, unknown>;
 type LogLevel = 'fatal' | 'error' | 'warn' | 'info';
 
-class Logger {
+@Service()
+export class Logger {
+  private readonly baseLogger: winston.Logger;
+
+  constructor(private readonly configService: ConfigService) {
+    this.baseLogger = this.createBaseLogger();
+  }
+
   private static readonly levels = {
     error: 0,
     warn: 1,
@@ -48,12 +56,17 @@ class Logger {
     winston.format.json(),
   );
 
-  private readonly baseLogger = winston.createLogger({
-    level: env.NODE_ENV === 'production' ? 'info' : 'debug',
-    levels: Logger.levels,
-    format: env.NODE_ENV === 'production' ? Logger.productionFormat : Logger.developmentFormat,
-    transports: [new winston.transports.Console()],
-  });
+  private createBaseLogger() {
+    return winston.createLogger({
+      level: this.configService.NODE_ENV === 'production' ? 'info' : 'debug',
+      levels: Logger.levels,
+      format:
+        this.configService.NODE_ENV === 'production'
+          ? Logger.productionFormat
+          : Logger.developmentFormat,
+      transports: [new winston.transports.Console()],
+    });
+  }
 
   private normalizeLogInput(metaOrMessage: unknown, message?: string) {
     if (typeof metaOrMessage === 'string') {
@@ -140,8 +153,3 @@ class Logger {
     next();
   };
 }
-
-const logger = new Logger();
-const requestLogger = logger.requestLogger;
-
-export { Logger, logger, requestLogger };

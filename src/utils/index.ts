@@ -1,3 +1,3 @@
-export * from './app-error.js';
-export * from './error-wrapper.js';
-export * from './logger.js';
+export * from './app-error';
+export * from './error-wrapper';
+export * from './logger';

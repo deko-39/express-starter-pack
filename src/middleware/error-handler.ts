@@ -1,7 +1,10 @@
+import '@src/preload';
+import { AppError, Logger } from '@src/utils';
 import { HttpStatusCode } from 'axios';
 import { NextFunction, Request, Response } from 'express';
-import { AppError } from '../utils/app-error.js';
-import { logger } from '../utils/logger.js';
+import { Container } from 'typedi';
+
+const logger = Container.get(Logger);
 
 export const errorHandler = (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (error instanceof AppError) {

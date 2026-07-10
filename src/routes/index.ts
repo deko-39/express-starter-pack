@@ -1,16 +1,25 @@
+import { UserController } from '@src/features/user';
 import { HttpStatusCode } from 'axios';
-import express from 'express';
-import userRouter from './user/index.js';
+import express, { Request, Response } from 'express';
+import { Service } from 'typedi';
 
-const router = express.Router();
+@Service()
+export class ApiController {
+  public readonly router = express.Router();
 
-router.get('/health', (_, res) => {
-  res.status(HttpStatusCode.Ok).json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-  });
-});
+  constructor(private readonly userController: UserController) {
+    this.registerRoutes();
+  }
 
-router.use('/users', userRouter);
+  private registerRoutes() {
+    this.router.get('/health', this.getHealth);
+    this.router.use('/users', this.userController.router);
+  }
 
-export default router;
+  private readonly getHealth = (_req: Request, res: Response) => {
+    res.status(HttpStatusCode.Ok).json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+    });
+  };
+}

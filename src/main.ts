@@ -1,9 +1,14 @@
+import './preload';
+
+import { app } from '@src/app';
+import { ConfigService } from '@src/config';
+import { Logger } from '@src/utils';
 import { createServer } from 'node:http';
-import { app } from './app.js';
-import { env } from './config/env.js';
-import { logger } from './utils/index.js';
+import { Container } from 'typedi';
 
 const server = createServer(app);
+const configService = Container.get(ConfigService);
+const logger = Container.get(Logger);
 
 const shutdown = (signal: NodeJS.Signals) => {
   logger.warn({ signal }, 'Shutdown signal received. Closing server.');
@@ -32,6 +37,6 @@ process.on('unhandledRejection', (reason: unknown) => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-server.listen(env.PORT, () => {
-  logger.info({ port: env.PORT }, 'API server is listening.');
+server.listen(configService.PORT, () => {
+  logger.info({ port: configService.PORT }, 'API server is listening.');
 });

@@ -1,4 +1,4 @@
-# Health Route
+# Health Controller
 
 ## Base Path
 
@@ -21,4 +21,4 @@ Example response:
 
 ## Source
 
-- `src/routes/index.ts`
+- `src/controllers/index.ts`
